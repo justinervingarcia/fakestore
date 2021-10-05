@@ -10,8 +10,8 @@ function Cart() {
 
     useEffect(() => {
         const cart = JSON.parse(localStorage.getItem('cart'));
-
-        if(cart){
+   
+        if(cart != null){
             console.log('get total price');
             
             let price = 0;
@@ -25,6 +25,7 @@ function Cart() {
                 totalPrice: price,
             })
         }
+     
     }, []);
 
     const capitalize = (string) => {
