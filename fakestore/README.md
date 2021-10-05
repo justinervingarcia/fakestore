@@ -1,4 +1,21 @@
-# Getting Started with Create React App
+# Getting Started with FakeStore
+
+1. This project has the following features:
+    - View All Products
+    - View Product Details
+    - Add Product to cart
+    - View Shopping cart
+    - Manage item quantity
+    - Remove item from cart
+    - Checkout
+
+2. Core Packages Used:
+    - TailwindCSS
+    - Axios
+
+3. Techniques Used:
+    - React Hooks (State and Effect Hook)
+    - LocalStorage (To persist shopping cart data)
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
