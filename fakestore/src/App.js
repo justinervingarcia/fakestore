@@ -20,10 +20,6 @@ function App() {
           <Route exact path="/" component={Home} />
           <Route path="/product/:id" component={ProductDetails} />
           <Route path="/cart" component={Cart} />
-          {/* <Route exact path="/register" component={Register} />
-          <Route exact path="/home" component={App} />
-          <Route exact path="/logout" component={Logout} />
-          <Route exact path="/apply" component={ApplyLeave} /> */}
         </Switch>
       </React.StrictMode>
       <hr />

@@ -10,12 +10,15 @@ function classNames(...classes) {
 function ProductDetails(props) {
     const history = useHistory();
     const productID = props.match.params.id;
+    
    
     const [productState, updateProductState] = useState({
         loading: true,
         details: null,
         added: false,
     });
+
+    console.log('productstate ' + productState.details);
 
     useEffect(() => {
         console.log('Get Product Details for ' + productID)
@@ -41,20 +44,23 @@ function ProductDetails(props) {
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
         let itemFound = false;
-        for (const item of cart) {
-            console.log(item);
-            console.log(item.product.id);
-            if (productState.details.id == item.product.id){
-                item.qty++; 
-                itemFound = true;
-                updateProductState({...productState, added: true,})
-                break;
+        
+        if(cart != null) {
+            for (const item of cart) {
+                console.log(item);
+                console.log(item.product.id);
+                if (productState.details.id == item.product.id){
+                    item.qty++; 
+                    itemFound = true;
+                    updateProductState({...productState, added: true,})
+                    break;
+                }
             }
         }
-
+        
         if (!itemFound) {
             cart.push({
-                product: productState.details,//JSON.stringify(productState.details),
+                product: productState.details,
                 qty: 1,
             });
         }
