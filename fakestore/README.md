@@ -1,3 +1,8 @@
+# Steps to run:
+1. Clone the project
+2. Inside fakestore directory, execute command `npm install`
+3. After installing the packages, execute command `npm start`
+
 # Getting Started with FakeStore
 
 1. This project has the following features:
