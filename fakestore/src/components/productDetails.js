@@ -7,25 +7,22 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
-function ProductDetails(props) {
+function ProductDetails({ myCart, updateCart }) {
     const history = useHistory();
-    const productID = props.match.params.id;
-    
-   
+    // const productID = props.match.params.id;
+    const { productID } = useParams();
+
     const [productState, updateProductState] = useState({
         loading: true,
         details: null,
         added: false,
     });
 
-    console.log('productstate ' + productState.details);
-
+    // Gets product details
     useEffect(() => {
-        console.log('Get Product Details for ' + productID)
         axiosInstance
             .get('products/' + productID)
             .then((res) =>{
-                console.log(res.data);
                 updateProductState({
                     loading: false,
                     details: res.data,
@@ -38,21 +35,18 @@ function ProductDetails(props) {
         
     }, []);
 
+    // Handles adding of item to cart
     const handleAddToCart = (e) => {
         e.preventDefault();
-        console.log('Add to Cart');
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
+        let cart = JSON.parse(localStorage.getItem('cart-justingarcia')) || [];
         let itemFound = false;
         
         if(cart != null) {
             for (const item of cart) {
-                console.log(item);
-                console.log(item.product.id);
                 if (productState.details.id == item.product.id){
                     item.qty++; 
                     itemFound = true;
-                    updateProductState({...productState, added: true,})
                     break;
                 }
             }
@@ -64,12 +58,17 @@ function ProductDetails(props) {
                 qty: 1,
             });
         }
-        
-        console.log(JSON.stringify(cart));
 
-        localStorage.setItem('cart', JSON.stringify(cart));
-        window.location.reload();
-        // history.push('/');
+        updateProductState({...productState, added: true,})
+
+        updateCart({
+            ...myCart,
+            items: cart,
+            itemCount: myCart.itemCount + 1,
+            totalPrice: myCart.totalPrice + productState.details.price,
+        });
+
+        localStorage.setItem('cart-justingarcia', JSON.stringify(cart));
     }
 
     const capitalize = (string) => {

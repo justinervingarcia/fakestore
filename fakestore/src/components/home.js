@@ -25,15 +25,6 @@ const Home = () => {
             })
     }, []);
 
-    useEffect(() => {
-        console.log('Get Cart');
-        const cart = JSON.parse(localStorage.getItem('cart'));
-
-        if(!cart) {
-            // localStorage.setItem('')
-        }
-    })
-
     if (appState.products.length === 0) return <div className="text-gray-800 mx-auto py-6 px-6">Loading...</div>
     return (
         <div className="bg-white">

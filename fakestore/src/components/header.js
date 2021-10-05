@@ -1,44 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Fragment } from 'react'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
 import { ShoppingCartIcon, MenuIcon, XIcon } from '@heroicons/react/outline'
 
 const navigation = [
     { name: 'Products', href: '/', current: true },
-   
   ]
   
 function classNames(...classes) {
     return classes.filter(Boolean).join(' ')
 }
 
-function Header() {
-
-    const [cart, updateCart] = useState({
-        itemCount: 0,
-        items: [],
-    });
-
-    useEffect(() => {
-        console.log('check cart');
-        const cart = JSON.parse(localStorage.getItem('cart'));
-       
-        if(cart){
-            let itemCount = 0;
-            for(const item of cart){
-                itemCount += item.qty;
-                console.log(itemCount);
-            }
-        
-            if(cart != null) {
-                updateCart({
-                    itemCount: itemCount,
-                    items: cart,
-                });
-            }
-        }
-        
-    }, [])
+function Header({ cart }) {
 
     return (
         <Disclosure as="nav" className="bg-white">

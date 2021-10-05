@@ -1,105 +1,85 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 
-function Cart() {
-    
+const Cart = ({ myCart, updateCart }) => {
 
-    const [cartState, updateCartState] = useState({
-        products: [],
-        totalPrice: 0,
-    }); 
-
-    useEffect(() => {
-        const cart = JSON.parse(localStorage.getItem('cart'));
-   
-        if(cart != null){
-            console.log('get total price');
-            
-            let price = 0;
-            for(const item of cart){
-                price += (item.product.price * item.qty);
-            }
-            console.log(price);
-
-            updateCartState({
-                products: cart,
-                totalPrice: price,
-            })
-        }
-     
-    }, []);
-
+    // Capitalizes string
     const capitalize = (string) => {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
-    const updateCart = (id, action) => {
-        console.log('update cart ' + id);
-        const cart = cartState.products;
-        let totalPrice = cartState.totalPrice;
+    // Updates the quantity of a specific item in existing cart (Add/Subtract)
+    const updateMyCart = (id, action) => {
+
+        let cart = myCart.items;
+        let totalPrice = myCart.totalPrice;
+        let totalQty = myCart.itemCount;
 
         for(let item of cart){
-            console.log(item.id + ' ' + id);
             if(item.product.id === id){
                 if(action === "add"){
                     item.qty++;
                     totalPrice += item.product.price;
+                    totalQty++;
                 }
                 else{
                     if(item.qty > 1){
                         item.qty--;
                         totalPrice -= item.product.price;
+                        totalQty--;
                     }
                 }
-                console.log('new value: ' + item.qty);
             }
         }
-        updateCartState({
-            ...cartState,
+
+        updateCart({
+            ...myCart,
+            itemCount: totalQty,
             totalPrice: totalPrice,
-            products: cart,
+            items: cart,
         });
 
-        localStorage.setItem('cart', JSON.stringify(cartState.products));
-        window.location.reload();
+        localStorage.setItem('cart-justingarcia', JSON.stringify(cart));
     }
 
+    // Removes item from cart
     const removeItem = (id) => {
-        const cart = cartState.products;
+        const cart = myCart.items;
         const index = cart.findIndex((item, i) => {
             return item.product.id === id
         });
-        console.log('index: ' + index);
-        const item = cartState.products[index];
+
+        const item = cart[index];
         cart.splice(index, 1);
-        
-        console.log(item);
-        updateCartState({
-            ...cartState,
-            products: cart,
-            totalPrice: cartState.totalPrice - (item.product.price * item.qty),
+    
+        updateCart({
+            ...myCart,
+            itemCount: myCart.itemCount - item.qty,
+            items: cart,
+            totalPrice: myCart.totalPrice - (item.product.price * item.qty),
         });
 
-        localStorage.setItem('cart', JSON.stringify(cartState.products));
-        window.location.reload();
+        localStorage.setItem('cart-justingarcia', JSON.stringify(cart));
+
     }
 
+    // Mimics checking out. All items in cart will be removed
     const handleCheckout = () => {
-        if(cartState.products.length > 0){
+        if(myCart.items.length > 0){
             alert('Thank you for your purchase!');
-            updateCartState({
-                products: [],
+            updateCart({
+                items: [],
                 totalPrice: 0,
+                itemCount: 0,
             });
             console.log(JSON.stringify([]));
-            localStorage.setItem('cart', JSON.stringify([]));
-            window.location.reload();
+            localStorage.setItem('cart-justingarcia', JSON.stringify([]));
         }
         else {
             alert('Your shopping cart is empty.');
         }
     }
     
-    if(cartState.products.length === 0) <div className="text-gray-800 mx-auto py-6 px-6">Loading Cart...</div>
+    if(myCart.items.length === 0) <div className="text-gray-800 mx-auto py-6 px-6">Loading Cart...</div>
     return (
         <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
             <div className="relative place-content-center max-w-full flex">
@@ -114,10 +94,10 @@ function Cart() {
                             <div className="mt-8">
                                 <div className="flow-root">
                                     <ul role="list" className="-my-6 divide-y divide-gray-200">
-                                        {cartState.products.length === 0 &&
+                                        {myCart.items.length === 0 &&
                                             <h1>No items in cart</h1>
                                         }
-                                        {cartState.products.map((product) => (
+                                        {myCart.items.map((product) => (
                                             <li key={product.product.id} className="py-6 flex">
                                                 <div className="flex-shrink-0 w-24 h-24 border border-gray-200 rounded-md overflow-hidden">
                                                     <img
@@ -151,15 +131,15 @@ function Cart() {
                                                     <div className="flex-1 flex items-end justify-between text-sm">
                                                         <div className="flex space-x-4 items-center">
                                                             <p className="text-gray-500">Qty</p>
-                                                            <button onClick={() => updateCart(product.product.id, "subtract")} className="bg-gray-300 hover:bg-gray-500 rounded p-2">-</button>
+                                                            <button onClick={() => updateMyCart(product.product.id, "subtract")} className="bg-gray-300 hover:bg-gray-500 rounded p-2">-</button>
                                                             <p className="font-bold">{product.qty}</p>
-                                                            <button onClick={() => updateCart(product.product.id, "add")} className="bg-gray-300 hover:bg-gray-500 rounded p-2">+</button>
+                                                            <button onClick={() => updateMyCart(product.product.id, "add")} className="bg-gray-300 hover:bg-gray-500 rounded p-2">+</button>
                                                         </div>
                                                     
 
                                                     <div className="flex">
                                                         <button onClick={() => removeItem(product.product.id)} type="button" className="font-medium text-red-500 hover:text-red-700">
-                                                        Remove
+                                                        Remove Item
                                                         </button>
                                                     </div>
                                                     </div>
@@ -174,7 +154,7 @@ function Cart() {
                         <div className="border-t border-gray-200 py-6 px-4 sm:px-6">
                             <div className="flex justify-between text-base font-medium text-gray-900">
                             <p>Total</p>
-                            <p>${cartState.totalPrice.toFixed(2)}</p>
+                            <p>${myCart.totalPrice.toFixed(2)}</p>
                             </div>
                             <p className="mt-0.5 text-sm text-gray-500">Shipping and taxes calculated at checkout.</p>
                             <div className="mt-6 flex justify-end">
